@@ -6,7 +6,6 @@
 # Update history:
 # 0,1.0 - initial release
 #
-# Author: Steve Chan
 # Copyright (c) 2020 Steve Chan
 #
 # License:
