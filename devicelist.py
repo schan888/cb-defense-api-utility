@@ -7,7 +7,6 @@
 # 0.1.0 - initial release
 # 0.1.1 - added override inactive dates feature
 #
-# Author: Steve Chan
 # Copyright (c) 2020 Steve Chan
 #
 # License:
