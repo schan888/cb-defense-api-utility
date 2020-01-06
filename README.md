@@ -1,5 +1,4 @@
-# cb-defense
-cb defense api utilities
+# Cb Defense API Utilities
 
 alerts.py - retrieve list of "policy applied" alerts based on a time window. 
   Usage example:
@@ -29,5 +28,5 @@ e.g. ABCDEF1234/ABC123,DEF123,1234
 Please refer to Carbon Black document for detail how to obtain the API key and credentials
 https://developer.carbonblack.com/reference/carbon-black-cloud/authentication/
 
-***** Warning *****
+# ***** Warning *****
 Keep the API key file secret. Disclosure of the API keys could result unauthorized access to the Cb Defense console
