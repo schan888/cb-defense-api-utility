@@ -25,7 +25,7 @@ All script requires an API key file.
 Content format: <api_secret_key>/<api_id>,<org_key>,<org_id>
 e.g. ABCDEF1234/ABC123,DEF123,1234
 
-Please refer to Carbon Black document for detail how to obtain the API key and credentials
+Refer to Carbon Black document for detail how to obtain the API key and credentials
 https://developer.carbonblack.com/reference/carbon-black-cloud/authentication/
 
 # ***** Warning *****
