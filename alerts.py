@@ -1,12 +1,14 @@
 # Name: alerts.py
 # Purpose: Script to retrieve Cb Defense endpoint alerts
-# Version: 0.1.1
-# Last Update 2020-01-05
+# Version: 0.1.2
+# Last Update 2020-02-14
 #
 # Update History
 # 0.1.0 - initial release
 # 0.1.1 - added override dates feature
+# 0.1.2 - corrected flipped start and end date json positon
 #
+# Author: Steve Chan
 # Copyright (c) 2020 Steve Chan
 #
 # License:
@@ -44,9 +46,10 @@
 # Override date format must be yyyy-mm-dd
 #
 # Usage example:
+# alerts.py [<end_date> [<start_date>]]
 # alerts.py - retrieve last calendar month's event_start
-# alert.py 2019-10-01 - retrieve 30 days of event from 2019-10-01
-# alert.py 2019-11-01 1019-11-10 - retrieves events between 2019-11-01 to 2019-11-10 inclusive
+# alerts.py 2020-01-31 - retrieve previous 30 days of event from 2020-01-31 (2020-01-01 to 2020-01-31)
+# alerts.py 2020-01-31 2020-01-20 - retrieves events from 2020-01-20 to 2019-11-31 inclusive
 
 import sys
 import csv
@@ -66,32 +69,32 @@ def validate(date_text):
     return(date_text)
 
 today = datetime.date.today()
-alert_start = datetime.date.today().replace(day=1) - datetime.timedelta(days=1)
-alert_end = (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).replace(day=1)
+alert_end = datetime.date.today().replace(day=1) - datetime.timedelta(days=1)
+alert_start = (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).replace(day=1)
 if len(sys.argv) == 1:
 	print ('No alert period override. Default to previous month from ', alert_start, 'to ', alert_end)
 elif len(sys.argv) == 2:
-    arg_start = sys.argv[1]
-    print ('Checking override start date:', arg_start)
-    r = validate(arg_start)
+    arg_end = sys.argv[1]
+    print ('Checking override end date:', arg_end)
+    r = validate(arg_end)
     if len(r) == 0:
-        print ('Invalid alert start date found: >' + arg_start + '<. Accepte only yyyy-dd-mm format')
+        print ('Invalid alert end date found: >' + arg_end + '<. Accept only yyyy-dd-mm format')
         sys.exit()
     print ('No override end date found. Default to 30 days')
-    alert_start = str(datetime.datetime.strptime(arg_start, '%Y-%m-%d'))[0:10]
-    alert_end = str((datetime.datetime.strptime(arg_start, '%Y-%m-%d') + datetime.timedelta(days=30)))[0:10]
+    alert_end = str(datetime.datetime.strptime(arg_end, '%Y-%m-%d'))[0:10]
+    alert_start = str((datetime.datetime.strptime(arg_end, '%Y-%m-%d') + datetime.timedelta(days=-30)))[0:10]
 else:
-    arg_start = sys.argv[1]
-    arg_end = sys.argv[2]
+    arg_end = sys.argv[1]
+    arg_start = sys.argv[2]
     print ('Checking override start date:', arg_start)
     r = validate(arg_start)
     if len(r) == 0:
-        print ('Invalid alert start date found: >' + arg_start + '<. Accepte only yyyy-dd-mm format')
+        print ('Invalid alert start date found: >' + arg_start + '<. Accept only yyyy-dd-mm format')
         sys.exit()
     print ('Checking override end date:', arg_end)
     r = validate(arg_end)
     if len(r) == 0:
-        print ('Invalid alert end date found: >' + arg_end + '<. Accepte only yyyy-dd-mm format')
+        print ('Invalid alert end date found: >' + arg_end + '<. Accept only yyyy-dd-mm format')
         sys.exit()
     alert_start = (datetime.datetime.strptime(arg_start, '%Y-%m-%d'))
     alert_end = (datetime.datetime.strptime(arg_end, '%Y-%m-%d'))
@@ -102,6 +105,8 @@ else:
     alert_end = arg_end
 event_start = str(alert_start) + 'T00:00:00.000Z'
 event_end = str(alert_end) + 'T23:59:59.999Z'
+print ('Alert events start date: ', event_start)
+print ('Alert events end date: ', event_end)
 
 # read API and Org info
 with open('apikey.txt') as apikeyfile:
@@ -120,11 +125,11 @@ event_criteria = data['criteria']
 event_applied = event_criteria['policy_applied']
 event_time = event_criteria['create_time']
 
-print ('search alerts with policy applied status', event_applied)
-print ('seearch alert event time:', event_time)
+#print ('search alerts with policy applied status', event_applied)
+#print ('search alert event time:', event_time)
 
 url = "https://defense-prod05.conferdeploy.net/appservices/v6/orgs/" + org_key + "/alerts/cbanalytics/_search"
-print ('url:', url)
+#print ('url:', url)
 response = requests.post(url,headers=auth_header, json=data)
 if response.status_code == 400:
     print ('Invalid query')
